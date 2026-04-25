@@ -1,0 +1,33 @@
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "Simplest possible plugin - just says hello",
+  "author": "PMS Examples",
+  "type": "extension",
+  "entrypoint": "main.py",
+  "sandbox": false,
+  "tools": [
+    {
+      "name": "say_hello",
+      "description": "Say hello to someone",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "description": "Name to greet"
+        }
+      }
+    },
+    {
+      "name": "get_greeting",
+      "description": "Get a greeting message without printing",
+      "parameters": {
+        "style": {
+          "type": "string",
+          "required": false,
+          "description": "Greeting style: formal, casual, excited"
+        }
+      }
+    }
+  ]
+}

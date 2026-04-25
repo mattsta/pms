@@ -1,0 +1,24 @@
+{
+  "exclude_prefixes": [
+    "aws",
+    "capabilities",
+    "claudo",
+    "config",
+    "context",
+    "generate",
+    "init",
+    "install",
+    "namespace",
+    "plugin",
+    "remote",
+    "report",
+    "run",
+    "serve",
+    "uninstall",
+    "verify-install",
+    "version",
+    "quickstart"
+  ],
+  "python": [],
+  "rust": []
+}

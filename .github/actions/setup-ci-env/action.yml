@@ -1,0 +1,32 @@
+name: Setup CI Environment
+description: Setup Python 3.14, uv, ripgrep, and frozen dev dependencies.
+
+inputs:
+  python-version:
+    description: Python version to install
+    required: false
+    default: "3.14"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install uv
+      shell: bash
+      run: pip install uv
+
+    - name: Install prettier
+      shell: bash
+      run: npm install -g prettier@3.6.2
+
+    - name: Install ripgrep
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+    - name: Sync dependencies
+      shell: bash
+      run: uv sync --dev --frozen

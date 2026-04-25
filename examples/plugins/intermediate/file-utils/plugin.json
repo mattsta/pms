@@ -1,0 +1,102 @@
+{
+  "name": "file-utils",
+  "version": "1.0.0",
+  "description": "File utility tools - search, analyze, and manipulate files",
+  "author": "PMS Examples",
+  "type": "extension",
+  "entrypoint": "main.py",
+  "sandbox": true,
+  "capabilities": ["filesystem_read"],
+  "max_memory_mb": 128,
+  "timeout": 30.0,
+  "tools": [
+    {
+      "name": "count_lines",
+      "description": "Count lines in a file or directory",
+      "parameters": {
+        "path": {
+          "type": "string",
+          "required": true,
+          "description": "Path to file or directory"
+        },
+        "pattern": {
+          "type": "string",
+          "required": false,
+          "description": "File pattern (e.g., *.py)"
+        }
+      }
+    },
+    {
+      "name": "find_files",
+      "description": "Find files matching a pattern",
+      "parameters": {
+        "directory": {
+          "type": "string",
+          "required": true,
+          "description": "Directory to search"
+        },
+        "pattern": {
+          "type": "string",
+          "required": true,
+          "description": "Glob pattern (e.g., **/*.py)"
+        },
+        "max_results": {
+          "type": "int",
+          "required": false,
+          "description": "Maximum results to return"
+        }
+      }
+    },
+    {
+      "name": "file_stats",
+      "description": "Get statistics about a file",
+      "parameters": {
+        "path": {
+          "type": "string",
+          "required": true,
+          "description": "Path to file"
+        }
+      }
+    },
+    {
+      "name": "search_content",
+      "description": "Search for text in files",
+      "parameters": {
+        "directory": {
+          "type": "string",
+          "required": true,
+          "description": "Directory to search"
+        },
+        "query": {
+          "type": "string",
+          "required": true,
+          "description": "Text to search for"
+        },
+        "file_pattern": {
+          "type": "string",
+          "required": false,
+          "description": "File pattern to search in"
+        }
+      }
+    }
+  ],
+  "hooks": [
+    {
+      "event": "task_created",
+      "handler": "on_task_created",
+      "priority": 100
+    }
+  ],
+  "config_schema": {
+    "default_directory": {
+      "type": "string",
+      "description": "Default directory for operations",
+      "required": false
+    },
+    "ignore_patterns": {
+      "type": "list",
+      "description": "Patterns to ignore (e.g., node_modules)",
+      "required": false
+    }
+  }
+}

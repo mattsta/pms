@@ -1,0 +1,141 @@
+{
+  "name": "plugin-factory",
+  "version": "1.0.0",
+  "description": "Meta-plugin that creates other plugins dynamically - self-building system",
+  "author": "PMS Examples",
+  "type": "runtime",
+  "entrypoint": "main.py",
+  "sandbox": false,
+  "capabilities": [
+    "filesystem_write",
+    "tools",
+    "namespaces"
+  ],
+  "tools": [
+    {
+      "name": "create_plugin",
+      "description": "Generate a new plugin from a template or description",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "Plugin name (lowercase, hyphens allowed)"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "What the plugin should do"
+        },
+        "tools": {
+          "type": "list",
+          "required": true,
+          "description": "List of tool definitions: [{name, description, params}]"
+        },
+        "output_dir": {
+          "type": "string",
+          "required": false,
+          "description": "Where to create the plugin"
+        }
+      }
+    },
+    {
+      "name": "create_tool",
+      "description": "Generate a single tool and add it to an existing plugin",
+      "parameters": {
+        "plugin_name": {
+          "type": "string",
+          "required": true
+        },
+        "tool_name": {
+          "type": "string",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "required": true
+        },
+        "parameters": {
+          "type": "dict",
+          "required": false
+        },
+        "implementation": {
+          "type": "string",
+          "required": false,
+          "description": "Python code for the implementation"
+        }
+      }
+    },
+    {
+      "name": "create_dsl_tools",
+      "description": "Generate a .tools DSL file from natural language descriptions",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "Name for the tools file"
+        },
+        "tools": {
+          "type": "list",
+          "required": true,
+          "description": "List of {name, description, logic} objects"
+        },
+        "output_dir": {
+          "type": "string",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "analyze_and_generate",
+      "description": "Analyze existing code/API and generate a plugin for it",
+      "parameters": {
+        "source": {
+          "type": "string",
+          "required": true,
+          "description": "Path to source code or API spec to analyze"
+        },
+        "plugin_name": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "list_templates",
+      "description": "List available plugin templates",
+      "parameters": {}
+    },
+    {
+      "name": "create_from_template",
+      "description": "Create a plugin from a predefined template",
+      "parameters": {
+        "template": {
+          "type": "string",
+          "required": true,
+          "description": "Template name: api-integration, file-processor, automation, data-transformer"
+        },
+        "name": {
+          "type": "string",
+          "required": true
+        },
+        "config": {
+          "type": "dict",
+          "required": false,
+          "description": "Template-specific configuration"
+        }
+      }
+    }
+  ],
+  "config_schema": {
+    "output_directory": {
+      "type": "string",
+      "default": "~/.pms/plugins",
+      "description": "Default directory for generated plugins"
+    },
+    "auto_register": {
+      "type": "bool",
+      "default": true,
+      "description": "Automatically register generated plugins"
+    }
+  }
+}

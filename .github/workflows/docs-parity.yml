@@ -1,0 +1,175 @@
+name: Docs And Parity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      audit_stage:
+        description: CI stage to run
+        required: true
+        default: all-preflight
+        type: choice
+        options:
+          - all-preflight
+          - validate-docs-and-parity
+          - scenario-contract-smokes-a
+          - scenario-contract-smokes-b
+          - scenario-contract-smokes-c
+          - docs-discoverability-audits
+          - runtime-integrity-audits
+          - surface-parity-audits
+          - lifecycle-rollup-audits
+          - full-test-suite
+
+concurrency:
+  group: docs-and-parity-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Docs And Parity
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage != 'full-test-suite'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run validate-docs-and-parity stage
+        run: ./scripts/run_audit_checks.sh validate-docs-and-parity
+
+  scenario-contract-smokes-a:
+    name: Audit Preflight / Scenario Smokes A
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage == 'all-preflight' || github.event.inputs.audit_stage == 'scenario-contract-smokes-a'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run scenario-contract-smokes-a stage
+        run: PMS_AUDIT_SKIP_TESTS=1 ./scripts/run_audit_checks.sh scenario-contract-smokes-a
+
+  scenario-contract-smokes-b:
+    name: Audit Preflight / Scenario Smokes B
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage == 'all-preflight' || github.event.inputs.audit_stage == 'scenario-contract-smokes-b'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run scenario-contract-smokes-b stage
+        run: PMS_AUDIT_SKIP_TESTS=1 ./scripts/run_audit_checks.sh scenario-contract-smokes-b
+
+  scenario-contract-smokes-c:
+    name: Audit Preflight / Scenario Smokes C
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage == 'all-preflight' || github.event.inputs.audit_stage == 'scenario-contract-smokes-c'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run scenario-contract-smokes-c stage
+        run: PMS_AUDIT_SKIP_TESTS=1 ./scripts/run_audit_checks.sh scenario-contract-smokes-c
+
+  docs-discoverability-audits:
+    name: Audit Preflight / Docs And Discoverability
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage == 'all-preflight' || github.event.inputs.audit_stage == 'docs-discoverability-audits'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run docs-discoverability-audits stage
+        run: PMS_AUDIT_SKIP_TESTS=1 ./scripts/run_audit_checks.sh docs-discoverability-audits
+
+  runtime-integrity-audits:
+    name: Audit Preflight / Runtime Integrity
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage == 'all-preflight' || github.event.inputs.audit_stage == 'runtime-integrity-audits'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run runtime-integrity-audits stage
+        run: PMS_AUDIT_SKIP_TESTS=1 ./scripts/run_audit_checks.sh runtime-integrity-audits
+
+  surface-parity-audits:
+    name: Audit Preflight / Surface Parity
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage == 'all-preflight' || github.event.inputs.audit_stage == 'surface-parity-audits'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run surface-parity-audits stage
+        run: PMS_AUDIT_SKIP_TESTS=1 ./scripts/run_audit_checks.sh surface-parity-audits
+
+  lifecycle-rollup-audits:
+    name: Audit Preflight / Lifecycle Rollups
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.audit_stage == 'all-preflight' || github.event.inputs.audit_stage == 'lifecycle-rollup-audits'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run lifecycle-rollup-audits stage
+        run: PMS_AUDIT_SKIP_TESTS=1 ./scripts/run_audit_checks.sh lifecycle-rollup-audits
+
+  full-test-suite:
+    name: Full Test Suite
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.audit_stage == 'full-test-suite'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup CI environment
+        uses: ./.github/actions/setup-ci-env
+
+      - name: Run full-test-suite stage
+        run: ./scripts/run_audit_checks.sh full-test-suite

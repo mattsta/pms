@@ -1,0 +1,82 @@
+[project]
+name = "pms"
+version = "0.1.0"
+description = "Project Management System - CLI tool with Claude Agent SDK for task management, remote execution, and documentation"
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "claude-code-sdk>=0.0.25",
+    "click>=8.0",
+    "rich>=13.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "aiosqlite>=0.19",
+    "asyncssh>=2.14",
+    "tenacity>=8.0",
+    "anyio>=4.0",
+    "loguru>=0.7.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "httpx>=0.28.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+pms = "pms.cli.app:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pms"]
+
+[tool.ruff]
+target-version = "py314"
+extend-exclude = ["another-project-management-system-for-compare"]
+
+[tool.ruff.lint]
+select = ["I", "UP", "SIM", "PTH", "FURB", "PGH"]
+extend-select = ["F401"]
+ignore = ["SIM102", "SIM110"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+exclude = [
+    "^examples/",
+    "^tests/",
+    "^main\\.py$",
+]
+
+[[tool.mypy.overrides]]
+module = ["asyncpg"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[project.optional-dependencies]
+aws = [
+    "boto3>=1.34",
+    "botocore>=1.34",
+    "boto3-stubs[ec2]>=1.34",
+]
+postgres = ["asyncpg>=0.30"]
+
+[dependency-groups]
+aws = ["boto3>=1.34", "botocore>=1.34", "boto3-stubs[ec2]>=1.34"]
+dev = [
+    "asyncpg>=0.30",
+    "mypy>=1.19.1",
+    "pytest>=8.0",
+    "pytest-asyncio>=1.3.0",
+    "pytest-xdist>=3.8.0",
+    "ruff>=0.14.9",
+    "moto[ec2]>=5.0",
+    "mypy-boto3-ec2>=1.42.10",
+    "boto3-stubs>=1.42.11",
+]

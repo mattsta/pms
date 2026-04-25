@@ -1,0 +1,122 @@
+{
+  "name": "data-pipeline",
+  "version": "1.0.0",
+  "description": "Data transformation and ETL pipelines - demonstrates data flow between plugins",
+  "author": "PMS Examples",
+  "type": "extension",
+  "entrypoint": "main.py",
+  "sandbox": false,
+  "capabilities": [
+    "filesystem_read",
+    "filesystem_write",
+    "tools"
+  ],
+  "tools": [
+    {
+      "name": "transform",
+      "description": "Apply transformations to data",
+      "parameters": {
+        "data": {
+          "type": "dict",
+          "required": true,
+          "description": "Input data to transform"
+        },
+        "operations": {
+          "type": "list",
+          "required": true,
+          "description": "List of transformation operations"
+        }
+      }
+    },
+    {
+      "name": "extract",
+      "description": "Extract data from various sources",
+      "parameters": {
+        "source": {
+          "type": "string",
+          "required": true,
+          "description": "Source type: json, csv, api, plugin"
+        },
+        "path": {
+          "type": "string",
+          "required": true,
+          "description": "Path to source (file path, URL, or plugin.tool)"
+        },
+        "options": {
+          "type": "dict",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "load",
+      "description": "Load transformed data to destination",
+      "parameters": {
+        "data": {
+          "type": "dict",
+          "required": true
+        },
+        "destination": {
+          "type": "string",
+          "required": true,
+          "description": "Destination type: json, csv, plugin"
+        },
+        "path": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "run_etl",
+      "description": "Run complete ETL pipeline",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "Pipeline name"
+        },
+        "extract_config": {
+          "type": "dict",
+          "required": true
+        },
+        "transform_operations": {
+          "type": "list",
+          "required": true
+        },
+        "load_config": {
+          "type": "dict",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "aggregate",
+      "description": "Aggregate data from multiple plugin sources",
+      "parameters": {
+        "sources": {
+          "type": "list",
+          "required": true,
+          "description": "List of {plugin, tool, args} sources"
+        },
+        "merge_strategy": {
+          "type": "string",
+          "required": false,
+          "default": "concat",
+          "description": "How to merge: concat, merge, join"
+        }
+      }
+    }
+  ],
+  "config_schema": {
+    "default_output_dir": {
+      "type": "string",
+      "default": "~/.pms/data",
+      "description": "Default directory for output files"
+    },
+    "cache_enabled": {
+      "type": "bool",
+      "default": true
+    }
+  }
+}

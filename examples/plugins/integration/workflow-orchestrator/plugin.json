@@ -1,0 +1,128 @@
+{
+  "name": "workflow-orchestrator",
+  "version": "1.0.0",
+  "description": "Orchestrates multi-plugin workflows - demonstrates integration patterns",
+  "author": "PMS Examples",
+  "type": "runtime",
+  "entrypoint": "main.py",
+  "sandbox": false,
+  "capabilities": [
+    "tools",
+    "events",
+    "namespaces"
+  ],
+  "tools": [
+    {
+      "name": "run_pipeline",
+      "description": "Execute a multi-step workflow pipeline",
+      "parameters": {
+        "pipeline": {
+          "type": "string",
+          "required": true,
+          "description": "Pipeline name or JSON definition"
+        },
+        "input": {
+          "type": "dict",
+          "required": false,
+          "description": "Initial input data for the pipeline"
+        },
+        "dry_run": {
+          "type": "bool",
+          "required": false,
+          "default": false,
+          "description": "Preview without executing"
+        }
+      }
+    },
+    {
+      "name": "define_pipeline",
+      "description": "Create a reusable workflow pipeline",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "Pipeline name"
+        },
+        "steps": {
+          "type": "list",
+          "required": true,
+          "description": "List of {plugin, tool, args, transform} steps"
+        },
+        "description": {
+          "type": "string",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "list_pipelines",
+      "description": "List all defined pipelines",
+      "parameters": {}
+    },
+    {
+      "name": "analyze_project",
+      "description": "Run comprehensive project analysis using multiple plugins",
+      "parameters": {
+        "directory": {
+          "type": "string",
+          "required": true,
+          "description": "Project directory to analyze"
+        },
+        "plugins": {
+          "type": "list",
+          "required": false,
+          "description": "Specific plugins to use (default: all available)"
+        }
+      }
+    },
+    {
+      "name": "create_project_workflow",
+      "description": "Set up automated workflows for a project",
+      "parameters": {
+        "project_name": {
+          "type": "string",
+          "required": true
+        },
+        "template": {
+          "type": "string",
+          "required": false,
+          "description": "Workflow template: development, devops, documentation"
+        }
+      }
+    }
+  ],
+  "hooks": [
+    {
+      "event": "project_created",
+      "handler": "on_project_created",
+      "priority": 50
+    },
+    {
+      "event": "task_completed",
+      "handler": "on_task_completed",
+      "priority": 50
+    },
+    {
+      "event": "plugin_started",
+      "handler": "on_plugin_started",
+      "priority": 100
+    }
+  ],
+  "config_schema": {
+    "pipelines_dir": {
+      "type": "string",
+      "default": "~/.pms/pipelines",
+      "description": "Directory to store pipeline definitions"
+    },
+    "auto_analyze": {
+      "type": "bool",
+      "default": true,
+      "description": "Auto-analyze projects on creation"
+    },
+    "default_plugins": {
+      "type": "list",
+      "default": ["file-utils", "github-integration"],
+      "description": "Default plugins to include in workflows"
+    }
+  }
+}

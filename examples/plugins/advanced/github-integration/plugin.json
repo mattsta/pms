@@ -1,0 +1,204 @@
+{
+  "name": "github-integration",
+  "version": "1.0.0",
+  "description": "Full GitHub integration - repos, issues, PRs, and automation",
+  "author": "PMS Examples",
+  "license": "MIT",
+  "homepage": "https://github.com/example/pms-github-plugin",
+  "type": "integration",
+  "entrypoint": "main.py",
+  "runtime": "python",
+  "sandbox": true,
+  "capabilities": [
+    "network",
+    "events",
+    "tools"
+  ],
+  "max_memory_mb": 256,
+  "timeout": 60.0,
+  "max_concurrent": 5,
+  "tools": [
+    {
+      "name": "list_repos",
+      "description": "List repositories for an organization or user",
+      "parameters": {
+        "owner": {
+          "type": "string",
+          "required": true,
+          "description": "Organization or user name"
+        },
+        "type": {
+          "type": "string",
+          "required": false,
+          "description": "Filter by type: all, public, private, forks, sources"
+        },
+        "limit": {
+          "type": "int",
+          "required": false,
+          "description": "Maximum repos to return"
+        }
+      },
+      "timeout": 30.0,
+      "cacheable": true,
+      "cache_ttl": 300
+    },
+    {
+      "name": "get_repo",
+      "description": "Get detailed information about a repository",
+      "parameters": {
+        "owner": {
+          "type": "string",
+          "required": true
+        },
+        "repo": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "list_issues",
+      "description": "List issues for a repository",
+      "parameters": {
+        "owner": {
+          "type": "string",
+          "required": true
+        },
+        "repo": {
+          "type": "string",
+          "required": true
+        },
+        "state": {
+          "type": "string",
+          "required": false,
+          "description": "Filter by state: open, closed, all"
+        },
+        "labels": {
+          "type": "string",
+          "required": false,
+          "description": "Comma-separated labels to filter by"
+        }
+      }
+    },
+    {
+      "name": "create_issue",
+      "description": "Create a new issue",
+      "parameters": {
+        "owner": {
+          "type": "string",
+          "required": true
+        },
+        "repo": {
+          "type": "string",
+          "required": true
+        },
+        "title": {
+          "type": "string",
+          "required": true
+        },
+        "body": {
+          "type": "string",
+          "required": false
+        },
+        "labels": {
+          "type": "list",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "list_prs",
+      "description": "List pull requests for a repository",
+      "parameters": {
+        "owner": {
+          "type": "string",
+          "required": true
+        },
+        "repo": {
+          "type": "string",
+          "required": true
+        },
+        "state": {
+          "type": "string",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "sync_to_tasks",
+      "description": "Sync GitHub issues to PMS tasks",
+      "parameters": {
+        "owner": {
+          "type": "string",
+          "required": true
+        },
+        "repo": {
+          "type": "string",
+          "required": true
+        },
+        "project_name": {
+          "type": "string",
+          "required": true,
+          "description": "PMS project to sync to"
+        },
+        "labels": {
+          "type": "string",
+          "required": false,
+          "description": "Only sync issues with these labels"
+        }
+      }
+    }
+  ],
+  "hooks": [
+    {
+      "event": "task_completed",
+      "handler": "on_task_completed",
+      "priority": 50,
+      "filter": {
+        "has_tag": "github"
+      }
+    },
+    {
+      "event": "project_created",
+      "handler": "on_project_created",
+      "priority": 100
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "httpx",
+      "version": ">=0.24.0",
+      "type": "python"
+    }
+  ],
+  "config_schema": {
+    "github_token": {
+      "type": "string",
+      "required": true,
+      "secret": true,
+      "env_var": "GITHUB_TOKEN",
+      "description": "GitHub personal access token"
+    },
+    "api_base_url": {
+      "type": "string",
+      "required": false,
+      "default": "https://api.github.com",
+      "description": "GitHub API base URL (for Enterprise)"
+    },
+    "default_org": {
+      "type": "string",
+      "required": false,
+      "description": "Default organization for commands"
+    },
+    "auto_sync": {
+      "type": "bool",
+      "required": false,
+      "default": false,
+      "description": "Automatically sync issues on project creation"
+    }
+  },
+  "on_load": "initialize",
+  "on_unload": "cleanup",
+  "on_enable": "start_sync",
+  "on_disable": "stop_sync"
+}

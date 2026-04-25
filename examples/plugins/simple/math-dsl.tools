@@ -1,0 +1,44 @@
+## Math DSL Tools - No Python Required!
+##
+## This file demonstrates creating tools using the PMS DSL.
+## No Python code needed - just declarative tool definitions.
+##
+## Usage:
+##     pms plugin discover examples/plugins/simple
+##     pms plugin call math-dsl.double --arg x=5
+##     pms plugin call math-dsl.is_even --arg n=4
+
+tool double:
+    description: "Double a number"
+    return x * 2
+
+tool triple:
+    description: "Triple a number"
+    return x * 3
+
+tool is_even:
+    description: "Check if a number is even"
+    return n % 2 == 0
+
+tool is_positive:
+    description: "Check if a number is positive"
+    when n > 0:
+        return "positive"
+    otherwise:
+        return "not positive"
+
+tool factorial:
+    description: "Calculate factorial (simplified for small numbers)"
+    when n <= 1:
+        return 1
+    otherwise:
+        return n * (n - 1) * (n - 2) if n > 2 else n
+
+tool greet_number:
+    description: "Generate a greeting based on a number"
+    when n > 100:
+        return "That's a big number!"
+    when n > 10:
+        return "Nice number!"
+    otherwise:
+        return "Small but mighty!"
